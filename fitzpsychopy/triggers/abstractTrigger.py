@@ -11,7 +11,6 @@ class trigger:
 
     def preStim(self, *args):
         """This code runs before each stim is displayed"""
-        print(f'PreStim {args}')
         pass
 
     def postStim(self, *args):
