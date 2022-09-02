@@ -12,9 +12,12 @@ dependencies:
   - pyparallel; platform_system != "Windows"
   - SoundFile; platform_system == "Windows"
   - websocket_client
+  - dataclasses
   - numpy
   - zarr
-  - PyUniversalLibrary
+  - mcculw
   - autopep8
-  - -e ./triggers
+  - scikit-image
+  - -e ./fitzpsychopy
+
   
