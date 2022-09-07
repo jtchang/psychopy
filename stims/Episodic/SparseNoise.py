@@ -15,7 +15,8 @@ expt_json = r'C:/Users/jeremyc/documents/git/psychopy/animal_info.json'
 stim_settings = {
     'num_trials': 2,
     'invert': 1,
-    'stim_duration': 0.25,  # seconds
+    'stim_duration': 0.25,
+    'inter_frame_interval': 0,# seconds
     'center_pos': [0, 0],
     'image_size': [51, 51],
     'total_frames': 9000,
@@ -99,11 +100,12 @@ trigger.logToFile(stim_setting_path,
 
 # Start Stim Presentations
 if stim_settings['initial_delay'] > 0:
-    logging.info(f'Waiting {stim_settings["initial_delay"]} seconds before starting stim to acquire a baseline.')
+    logging.info('Waiting %0.1f seconds before starting stim to acquire a baseline.', stim_settings["initial_delay"])
     for _ in range(int(np.round(stim_settings['initial_delay']*stim_settings['frame_rate']))):
         my_win.flip()
 
 for trial_num in range(stim_settings['num_trials']):
+    logging.info('Starting Trial #%i', trial_num+1)
     trigger.preStim(1)
     if stim_settings['invert']:
         invert = (-1)**trial_num
@@ -113,13 +115,16 @@ for trial_num in range(stim_settings['num_trials']):
     
         img.setAutoDraw(True)
         
-        trigger.preFlip(None)
-        my_win.flip()
-        trigger.postFlip(None)
-        
-        for _ in np.arange(frames_per_stim-1):
+       
+        for _ in np.arange(frames_per_stim):
+            trigger.preFlip(None)
             my_win.flip()
-   
+            trigger.postFlip(None)
+
+        img.setAutoDraw(False)
+        for _ in np.arange(stim_settings['inter_frame_interval']*stim_settings['frame_rate']):
+            my_win.flip()
+        
     img.setAutoDraw(False)
     for _ in np.arange(isi_frames):
         my_win.flip()
