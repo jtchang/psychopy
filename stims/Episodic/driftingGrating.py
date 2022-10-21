@@ -10,10 +10,10 @@ from triggers import create_trigger
 
 logging.basicConfig(level=logging.INFO)
 
-expt_json = r'C:/Users/jeremyc/documents/git/psychopy/animal_info.json'
+expt_json = r'C:\Users\fitzlab1\Documents\psychopy\animal_info.json'
 
 stim_settings = {
-    'num_trials': 2,
+    'num_trials': 10,
     'num_orientations': 16,
     'do_blank': 1,
     'num_blanks': 1,
@@ -22,8 +22,8 @@ stim_settings = {
     'isi': 6,
     'is_random': 1,
     'random_phase': 1,
-    'temporal_freq': .25,
-    'spatial_freq': 0.06,
+    'temporal_freq': 1,
+    'spatial_freq': 0.015,
     'contrast': 1,
     'texture_type': 'sqr',
     'change_direction_at': 1,
@@ -32,7 +32,7 @@ stim_settings = {
     'stim_size': [360, 360]
 }
 
-trigger_type = 'NoTrigger'
+trigger_type = 'OutOnly'
 
 data_path, animal_name = load_animal_info(expt_json)
 if data_path is None or animal_name is None:
@@ -52,7 +52,7 @@ stim_settings['foreground_color'] = -1      # 1: black on white, -1: white on bl
 
 
 # Monitor Set Up
-mon = monitors.Monitor('Desktop')
+mon = monitors.Monitor('stim1')
 mon.setDistance(25)
 
 my_win = visual.Window(size=mon.getSizePix(),
@@ -61,7 +61,6 @@ my_win = visual.Window(size=mon.getSizePix(),
                        screen=1,
                        allowGUI=False,
                        waitBlanking=True)
-
 
 # Create Trigger:
 trigger = create_trigger(trigger_type,
@@ -72,7 +71,7 @@ trigger = create_trigger(trigger_type,
 
 
 # Stim Setup
-stim_settings['frame_rate'] = my_win.getActualFrameRate(nWarmUpFrames=100)
+stim_settings['frame_rate'] = my_win.getActualFrameRate(nWarmUpFrames=250)
 logging.info(f'Frame Rate: {stim_settings["frame_rate"]:0.2f}')
 
 if adjust_stim_duration_to_match_2p:
@@ -82,7 +81,7 @@ logging.info(f'Stim Duration: {stim_settings["stim_duration"]}')
 stim_settings['stim_frames'] = int(np.round(stim_settings['stim_duration'] * stim_settings['frame_rate']))
 isi_frames = int(np.round(stim_settings['isi'] * stim_settings['frame_rate']))
 
-rad_per_frame = 2*np.pi/ stim_settings['frame_rate'] #2*np.pi * stim_settings['temporal_freq'] / stim_settings['frame_rate']
+rad_per_frame = 2*np.pi * stim_settings['temporal_freq'] / stim_settings['frame_rate']
 change_direction_frame = int(np.round(stim_settings['stim_frames'] * stim_settings['change_direction_at']))
 
 # Create Stim Ordering
@@ -126,7 +125,8 @@ grating_stim = visual.GratingStim(win=my_win,
 
 #PreTrial Logging
 
-expt_name = trigger.getNextExpName()
+expt_name = trigger.getNextExpName(data_path, animal_name)
+logging.info(f'Expt Num: {expt_name}')
 stim_code_name = str(Path(__file__))
 log_file = Path(data_path).joinpath(animal_name, f'{animal_name}.txt')
 trigger.preTrialLogging(data_path,

@@ -16,8 +16,9 @@ dependencies:
   - numpy
   - zarr
   - mcculw
+  - natsort
   - autopep8
   - scikit-image
   - -e ./fitzpsychopy
-
+  - -e ./triggers
   

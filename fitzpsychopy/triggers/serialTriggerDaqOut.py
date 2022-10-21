@@ -11,19 +11,20 @@ from mcculw.enums import DigitalPortType, DigitalIODirection
 from .abstractTrigger import trigger
 from os import path, makedirs
 import shutil
-import glob
+import natsort
+import re
 from pathlib import Path
-
-
+import logging
+logger = logging.getLogger()
 class serialTriggerDaqOut(trigger):
 
-    def __init__(self, data_path=None, animal_name=None, **kwargs):
+    def __init__(self, data_path=None, animal_name=None, serial_port_name = 'COM5', **kwargs):
 
         super().__init__(data_path, animal_name)
-
+        logger.debug(serial_port_name)
         # serial port setup
         self.boardNum = kwargs.get('board_num', 0)
-        self.serialPortName = kwargs.get('serial_port_name', 'COM3')
+        self.serialPortName = serial_port_name
 
         self.ser = serial.Serial(self.serialPortName, 9600, timeout=0)
         self.basestate = 1  # what is baseline state? 1 if stimtrig is high to low, 0 if low to high
@@ -60,12 +61,12 @@ class serialTriggerDaqOut(trigger):
         #UL.cbDOut(self.boardNum, UL.FIRSTPORTA, stimNumber)
         #UL.cbDOut(self.boardNum, UL.FIRSTPORTB, self.basestate)
 
-        UL.d_out(self.board,
+        UL.d_out(self.boardNum,
                  DigitalPortType.FIRSTPORTA,
                  stimNumber)
 
-        UL.d_out(self.board,
-                 DigitalPortType.FIRSPORTB,
+        UL.d_out(self.boardNum,
+                 DigitalPortType.FIRSTPORTB,
                  self.basestate)
 
         # wait for 2pt frame trigger
@@ -80,7 +81,7 @@ class serialTriggerDaqOut(trigger):
 
     def preFlip(self, args):
         # UL.cbDOut(self.boardNum, UL.FIRSTPORTB, self.basestate)  # return to base state
-        UL.d_out(self.board,
+        UL.d_out(self.boardNum,
                  DigitalPortType.FIRSTPORTB,
                  self.basestate)
 
@@ -92,14 +93,14 @@ class serialTriggerDaqOut(trigger):
             # this costs 1.2ms (+/- 0.1ms).
             #UL.cbDOut(self.boardNum, UL.FIRSTPORTB, (self.basestate+1) % 2)
 
-            UL.d_out(self.board,
+            UL.d_out(self.boardNum,
                      DigitalPortType.FIRSTPORTB,
                      (self.basestate+1) % 2)
 
             # Only need to do this once per stim
             self.needToSendStimcode = False
         # UL.cbDOut(self.boardNum, UL.FIRSTPORTB, self.basestate+2)  # this should be an every frame trigger
-        UL.d_out(self.board,
+        UL.d_out(self.boardNum,
                  DigitalPortType.FIRSTPORTB,
                  self.basestate+2)
 
@@ -117,11 +118,14 @@ class serialTriggerDaqOut(trigger):
     # additional functions
     def waitForSerial(self):
         # wait for the next time a trigger appears on the serial port
-        # Make sure to call ser.flushInput() so that the buffer will be clear before we reach here.
-        bytes = ""
+        # Make sure
+        #  to call ser.flushInput() so that the buffer will be clear before we reach here.
+        bytes = b''
         self.ser.flushInput()
-        while (bytes == ""):
+        while bytes == b'':
+            self.ser.flushInput()
             bytes = self.ser.read()
+            
 
     def waitForXTriggers(self, trigToWait):
         self.waitForSerial()
@@ -203,13 +207,11 @@ class serialTriggerDaqOut(trigger):
     def getNextExpName(self, *args):
         dataDirName = args[0]
         animalName = args[1]
-        currentDirs = glob.glob(dataDirName+animalName+'\\t*')
-        startInt = len(dataDirName)+len(animalName)+3
-        mxdir = 0
-        for d in currentDirs:
-            this = int(d[startInt:len(d)])
-            mxdir = max(mxdir, this)
-        expName = 't{0:05.0f}'.format(mxdir+1)
+        currentDirs = [x.name for x in Path(dataDirName).joinpath(animalName).glob('t*') if x.is_dir()]
+        
+        currentDir = natsort.natsorted(currentDirs)[-1]
+        expNum = int(re.compile('\d+$').search(currentDir)[0])
+        expName = f't{str(expNum+1).zfill(5)}'
         return expName
 
     def logToFile(self, filename, data):

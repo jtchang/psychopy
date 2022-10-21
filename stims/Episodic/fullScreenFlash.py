@@ -9,7 +9,7 @@ from triggers import create_trigger
 
 logging.basicConfig(level=logging.INFO)
 
-expt_json = r'C:/Users/jeremyc/documents/git/psychopy/animal_info.json'
+expt_json = r'C:\Users\fitzlab1\Documents\psychopy\animal_info.json'
 
 stim_settings = {
     'num_trials': 20,

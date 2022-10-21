@@ -9,7 +9,7 @@ from triggers import create_trigger
 print("initialized")
 
 
-data_path, animal_name = load_animal_info(r'C:/Users/jeremyc/documents/git/psychopy/animal_info.json')
+data_path, animal_name = load_animal_info(r'C:\Users\fitzlab1\Documents\psychopy\animal_info.json')
 
 
 trigger_type = 'NoTrigger'

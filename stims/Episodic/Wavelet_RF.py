@@ -7,7 +7,7 @@ from triggers import create_trigger
 
 logging.basicConfig(level=logging.INFO)
 
-data_path, animal_name = load_animal_info(r'C:/Users/jeremyc/documents/git/psychopy/animal_info.json')
+data_path, animal_name = load_animal_info(r'C:\Users\fitzlab1\Documents\psychopy\animal_info.json')
 
 
 stim_settings = {

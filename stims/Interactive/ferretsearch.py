@@ -11,7 +11,7 @@ from itertools import count
 
 logging.basicConfig(level=logging.INFO)
 
-expt_json = r'C:/Users/jeremyc/documents/git/psychopy/animal_info.json'
+expt_json = r'C:\Users\fitzlab1\Documents\psychopy\animal_info.json'
 
 stim_settings = {
 
@@ -30,7 +30,7 @@ stim_settings = {
     'stim_size': [360, 360]
 }
 
-trigger_type = 'NoTrigger'
+trigger_type = 'OutOnly'
 
 data_path, animal_name = None, None
 
@@ -48,7 +48,7 @@ stim_settings['foreground_color'] = -1      # 1: black on white, -1: white on bl
 
 
 # Monitor Set Up
-mon = monitors.Monitor('Desktop')
+mon = monitors.Monitor('stim1')
 mon.setDistance(25)
 
 my_win = visual.Window(size=mon.getSizePix(),
