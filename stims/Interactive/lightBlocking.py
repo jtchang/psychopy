@@ -5,10 +5,10 @@ from psychopy import core
 
 contrastCounter = 0
 flashInterval = 2       # interval for autonomous flashing
-isUserControlled = 0  # If 1, the user can use "z" to flash the scrzzeen, 'c' to set to gray, 'x' to show a static grating
+isUserControlled = 1 # If 1, the user can use "z" to flash the scrzzeen, 'c' to set to gray, 'x' to show a static grating
 
 
-mon = monitors.Monitor('Desktop')
+mon = monitors.Monitor('Stim1')
 mon.setDistance(25)
 
 my_win = visual.Window(size=mon.getSizePix(),

@@ -17,13 +17,13 @@ stim_settings = {
     'num_orientations': 16,
     'do_blank': 1,
     'num_blanks': 1,
-    'initial_delay': 2,
+    'initial_delay': 10,
     'stim_duration': 4,
     'isi': 6,
     'is_random': 1,
-    'random_phase': 1,
+    'random_phase': 0,
     'temporal_freq': 1,
-    'spatial_freq': 0.015,
+    'spatial_freq': 0.06,
     'contrast': 1,
     'texture_type': 'sqr',
     'change_direction_at': 1,
@@ -32,7 +32,7 @@ stim_settings = {
     'stim_size': [360, 360]
 }
 
-trigger_type = 'OutOnly'
+trigger_type = 'SerialDaqOut'
 
 data_path, animal_name = load_animal_info(expt_json)
 if data_path is None or animal_name is None:
@@ -81,7 +81,7 @@ logging.info(f'Stim Duration: {stim_settings["stim_duration"]}')
 stim_settings['stim_frames'] = int(np.round(stim_settings['stim_duration'] * stim_settings['frame_rate']))
 isi_frames = int(np.round(stim_settings['isi'] * stim_settings['frame_rate']))
 
-rad_per_frame = 2*np.pi * stim_settings['temporal_freq'] / stim_settings['frame_rate']
+phase_per_frame = stim_settings['temporal_freq'] / stim_settings['frame_rate'] # modulus 1 per psychopy
 change_direction_frame = int(np.round(stim_settings['stim_frames'] * stim_settings['change_direction_at']))
 
 # Create Stim Ordering
@@ -127,6 +127,7 @@ grating_stim = visual.GratingStim(win=my_win,
 
 expt_name = trigger.getNextExpName(data_path, animal_name)
 logging.info(f'Expt Num: {expt_name}')
+
 stim_code_name = str(Path(__file__))
 log_file = Path(data_path).joinpath(animal_name, f'{animal_name}.txt')
 trigger.preTrialLogging(data_path,
@@ -166,9 +167,9 @@ for trial_num, stim_order in enumerate(trial_ordering):
         for frame_idx in range(stim_settings['stim_frames']):
 
             if frame_idx < change_direction_frame:
-                phase_offset = frame_idx /stim_settings['frame_rate']
+                phase_offset = frame_idx * phase_per_frame
             else:
-                phase_offset = rad_per_frame * (2 * change_direction_frame - frame_idx)
+                phase_offset = change_direction_frame * phase_per_frame - (frame_idx-change_direction_frame) * phase_per_frame
             grating_stim.setPhase(phase + phase_offset) 
 
             trigger.preFlip(None)
@@ -178,9 +179,9 @@ for trial_num, stim_order in enumerate(trial_ordering):
 
         grating_stim.setAutoDraw(False)
         for _ in range(isi_frames):
-            trigger.preFlip(None)
+            #trigger.preFlip(None)
             my_win.flip()
-            trigger.postFlip(None)
+            #trigger.postFlip(None)
         
         trigger.postStim(None)
         

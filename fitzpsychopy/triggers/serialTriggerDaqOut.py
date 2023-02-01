@@ -205,12 +205,15 @@ class serialTriggerDaqOut(trigger):
             w.writerow([animalName, " ", expName, " Started at ", datetime.datetime.now()])
 
     def getNextExpName(self, *args):
+        super().getNextExpName(*args)
         dataDirName = args[0]
         animalName = args[1]
         currentDirs = [x.name for x in Path(dataDirName).joinpath(animalName).glob('t*') if x.is_dir()]
-        
-        currentDir = natsort.natsorted(currentDirs)[-1]
-        expNum = int(re.compile('\d+$').search(currentDir)[0])
+        if len(currentDirs):
+            currentDir = natsort.natsorted(currentDirs)[-1]
+            expNum = int(re.compile('\d+$').search(currentDir)[0])
+        else:
+            expNum = 0
         expName = f't{str(expNum+1).zfill(5)}'
         return expName
 

@@ -15,8 +15,8 @@ expt_json = r'C:\Users\fitzlab1\Documents\psychopy\animal_info.json'
 
 
 stim_settings = {
-    'num_trials': 2,
-    'num_orientations': 2,
+    'num_trials': 20,
+    'num_orientations': 4,
     'do_blank': 0,
     'num_blanks': 0,
     'initial_delay': 10,
@@ -24,13 +24,14 @@ stim_settings = {
     'isi': 0,
     'bar_color': [1, 1, 1],
     'invert': 1,
-    'bar_width': 10,  # degrees
-    'center_pos': [0, 0],  # pixels
-    'shuffle': 1
+    'bar_width': 5,  # degrees
+    'center_pos': [-960, 0],  # pixels
+    'shuffle': 1,
+    'head_angle': -26 #negative means rolled clockwise
 }
 
 # #Monitor Set Up
-mon = monitors.Monitor('Desktop')
+mon = monitors.Monitor('Stim1')
 mon.setDistance(25)
 
 my_win = visual.Window(size=mon.getSizePix(),
@@ -40,9 +41,9 @@ my_win = visual.Window(size=mon.getSizePix(),
                        allowGUI=False,
                        waitBlanking=False,
                        color=[0, 0, 0],
-                       pos=stim_settings['center_pos'])
+                       pos=(0,0))
 
-trigger_type = 'NoTrigger'
+trigger_type = 'SerialDaqOut'
 
 data_path, animal_name = load_animal_info(expt_json)
 if data_path is None or animal_name is None:
@@ -74,12 +75,14 @@ stim_settings['stim_frames'] = int(np.round(stim_settings['stim_duration'] * sti
 isi_frames = int(np.round(stim_settings['isi'] * stim_settings['frame_rate']))
 
 # Setup Stim
+bar_center = [tools.monitorunittools.pix2deg(stim_settings['center_pos'][0], mon),
+                tools.monitorunittools.pix2deg(stim_settings['center_pos'][1], mon)]
 bar = visual.Rect(win=my_win,
                   width=stim_settings['bar_width'],
                   height=360,
                   units='deg',
                   fillColor=stim_settings['bar_color'],
-                  pos=(0, 0))
+                  pos=bar_center)
 
 
 #mon_diagonal = np.linalg.norm(np.array(mon.getSizePix()))
@@ -87,7 +90,7 @@ mon_diagonal = np.linalg.norm([1920, 1080])                  # hardcode this for
 max_dim = tools.monitorunittools.pix2deg(mon_diagonal, mon) + stim_settings['bar_width']
 stim_settings['angle_range'] = (-max_dim/2, max_dim/2)
 deg_per_frame = max_dim / stim_settings['stim_frames']
-orientations = np.arange(0, 360, 360.0/stim_settings['num_orientations'])
+orientations = np.arange(0, 360, 360.0/stim_settings['num_orientations']) 
 
 # Set Stim Orders
 stim_orders = np.empty((stim_settings['num_trials'], stim_settings['num_orientations']), dtype=int)
@@ -105,7 +108,7 @@ ori_correction = -90
 
 # PreTrial Logging
 
-expt_name = trigger.getNextExpName()
+expt_name = trigger.getNextExpName(data_path, animal_name)
 stim_code_name = str(Path(__file__))
 log_file = Path(data_path).joinpath(animal_name, f'{animal_name}.txt')
 trigger.preTrialLogging(data_path,
@@ -131,7 +134,7 @@ for trial_num, trial_order in enumerate(stim_orders):
     logging.info('Starting Trial %s', trial_num+1)
     for stim_num in trial_order:
         bar.setAutoDraw(True)
-        theta = np.deg2rad(orientations[stim_num] + ori_correction)
+        theta = np.deg2rad(orientations[stim_num] + ori_correction - stim_settings['head_angle'])
 
         rot = np.array([[np.cos(theta), np.sin(theta)], [-np.sin(theta), np.cos(theta)]])
         bar.setOri(np.rad2deg(theta))
@@ -139,7 +142,7 @@ for trial_num, trial_order in enumerate(stim_orders):
         logging.info('Stim # %s : %0.2f', stim_num+1, orientations[stim_num])
         trigger.preStim(stim_num+1)
         for frame_num in range(stim_settings['stim_frames']):
-            new_pos = np.array([-max_dim/2 + frame_num * deg_per_frame, 0])
+            new_pos = np.array([-max_dim/2 + frame_num * deg_per_frame +bar_center[0], 0])
             rot_pos = np.dot(rot, new_pos)
             bar.setPos(rot_pos)
             trigger.preFlip(None)

@@ -13,17 +13,17 @@ logging.basicConfig(level=logging.INFO)
 expt_json = r'C:\Users\fitzlab1\Documents\psychopy\animal_info.json'
 
 stim_settings = {
-    'num_trials': 2,
-    'num_orientations': 16,
+    'num_trials': 5,
+    'num_orientations': 8,
     'do_blank': 1,
     'num_blanks': 1,
-    'initial_delay': 2,
+    'initial_delay': 10,
     'stim_duration': 4,
     'isi': 6,
     'is_random': 1,
     'random_phase': 1,
-    'temporal_freq': .25,
-    'spatial_freq': 0.06,
+    'temporal_freq': 1,
+    'spatial_freq': 0.12,
     'contrasts': [0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1],
     'texture_type': 'sqr',
     'change_direction_at': 1,
@@ -32,7 +32,7 @@ stim_settings = {
     'stim_size': [360, 360]
 }
 
-trigger_type = 'NoTrigger'
+trigger_type = 'SerialDaqOut'
 
 
 data_path, animal_name = load_animal_info(expt_json)
@@ -52,7 +52,7 @@ stim_settings['foreground_color'] = -1      # 1: black on white, -1: white on bl
 
 
 # Monitor Set Up
-mon = monitors.Monitor('Desktop')
+mon = monitors.Monitor('Stim1')
 mon.setDistance(25)
 
 my_win = visual.Window(size=mon.getSizePix(),
@@ -136,7 +136,7 @@ grating_stim = visual.GratingStim(win=my_win,
 
 #PreTrial Logging
 
-expt_name = trigger.getNextExpName()
+expt_name = trigger.getNextExpName(data_path, animal_name)
 stim_code_name = str(Path(__file__))
 log_file = Path(data_path).joinpath(animal_name, f'{animal_name}.txt')
 trigger.preTrialLogging(data_path,
@@ -145,7 +145,7 @@ trigger.preTrialLogging(data_path,
                         stim_code_name,
                         orientations,
                         log_file)
-stim_setting_path = str(Path(data_path).joinpath(animal_name, expt_name, 'stim_settings.json')
+stim_setting_path = str(Path(data_path).joinpath(animal_name, expt_name, 'stim_settings.json'))
 trigger.logToFile(stim_setting_path,
                   json.dumps(stim_settings))
 
@@ -167,7 +167,7 @@ for trial_num, stim_order in enumerate(trial_ordering):
         if stim_num < len(stim_codes):  # grating stims
             grating_stim.setContrast(stim_codes[stim_num][1])
             grating_stim.ori = stim_codes[stim_num][0] + ori_shift_val + stim_settings['animal_orientation']
-            logging.info('Stim %i: %0.5f - %0.2f deg (phase = %0.2f)',
+            logging.info('Stim %i: %0.1f deg- %0.2f percent (phase = %0.2f)',
                          stim_num+1, stim_codes[stim_num][0], stim_codes[stim_num][1], phase)
             
 

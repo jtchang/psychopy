@@ -12,7 +12,7 @@ print("initialized")
 data_path, animal_name = load_animal_info(r'C:\Users\fitzlab1\Documents\psychopy\animal_info.json')
 
 
-trigger_type = 'NoTrigger'
+trigger_type = 'OutOnly'
 serial_port_name = 'COM3'  # ignored if triggerType is "None"
 adjustDurationToMatch2P = True
 
@@ -21,7 +21,7 @@ adjustDurationToMatch2P = True
 
 orientations = ''
 # make stim
-mon = monitors.Monitor('Desktop')
+mon = monitors.Monitor('Stim1')
 myWin = visual.Window(size=mon.getSizePix(), monitor=mon, fullscr=False, screen=1, allowGUI=False, waitBlanking=True)
 
 
@@ -40,7 +40,7 @@ trigger = create_trigger(trigger_type,
                          animal_name,
                          serial_port_num=serial_port_name)
 
-expt_name = trigger.getNextExpName()
+expt_name = trigger.getNextExpName(data_path, animal_name)
 stim_code_name = str(Path(__file__))
 log_file = Path(data_path).joinpath(animal_name, f'{animal_name}.txt')
 trigger.preTrialLogging(data_path,

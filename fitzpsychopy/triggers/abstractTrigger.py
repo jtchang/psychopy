@@ -3,6 +3,7 @@
 # They can be empty / do nothing, but they must all be defined.
 # Have a look at the noTrigger class for an example of a minimal implementation.
 
+from pathlib import Path
 class trigger:
     def __init__(self, data_path=None, animal_name=None):
         """Template trigger code initializing"""
@@ -36,6 +37,8 @@ class trigger:
 
     def getNextExpName(self, *args):
         """This code finds information about the experiment"""
+        if not Path(args[0]).joinpath(args[1]).exists():
+            Path(args[0]).joinpath(args[1]).mkdir()
         return ""
 
     def logToFile(self, filename, data):
