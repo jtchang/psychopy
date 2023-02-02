@@ -16,7 +16,7 @@ expt_json = r'C:\Users\fitzlab1\Documents\psychopy\animal_info.json'
 
 stim_settings = {
     'num_trials': 20,
-    'num_orientations': 4,
+    'num_orientations': 8,
     'do_blank': 0,
     'num_blanks': 0,
     'initial_delay': 10,
@@ -25,14 +25,16 @@ stim_settings = {
     'bar_color': [1, 1, 1],
     'invert': 1,
     'bar_width': 5,  # degrees
-    'center_pos': [-960, 0],  # pixels
-    'shuffle': 1,
-    'head_angle': -26 #negative means rolled clockwise
+    'center_pos': [0, 0],  # pixels
+    'shuffle': 0,
+    'head_angle': 0 #negative means rolled clockwise
 }
 
 # #Monitor Set Up
 mon = monitors.Monitor('LGStim')
 mon.setDistance(25)
+
+stim_settings['deg_range'] = tools.monitorunittools.pix2deg(np.ceil(np.linalg.norm(mon.getSizePix())), mon)
 
 my_win = visual.Window(size=mon.getSizePix(),
                        monitor=mon,
@@ -85,9 +87,8 @@ bar = visual.Rect(win=my_win,
                   pos=bar_center)
 
 
-#mon_diagonal = np.linalg.norm(np.array(mon.getSizePix()))
-mon_diagonal = np.linalg.norm([1920, 1080])                  # hardcode this for the surround monitor
-max_dim = tools.monitorunittools.pix2deg(mon_diagonal, mon) + stim_settings['bar_width']
+
+max_dim = stim_settings['deg_range'] + stim_settings['bar_width']/2
 stim_settings['angle_range'] = (-max_dim/2, max_dim/2)
 deg_per_frame = max_dim / stim_settings['stim_frames']
 orientations = np.arange(0, 360, 360.0/stim_settings['num_orientations']) 
@@ -141,6 +142,7 @@ for trial_num, trial_order in enumerate(stim_orders):
 
         logging.info('Stim # %s : %0.2f', stim_num+1, orientations[stim_num])
         trigger.preStim(stim_num+1)
+       
         for frame_num in range(stim_settings['stim_frames']):
             new_pos = np.array([-max_dim/2 + frame_num * deg_per_frame +bar_center[0], 0])
             rot_pos = np.dot(rot, new_pos)
@@ -148,6 +150,7 @@ for trial_num, trial_order in enumerate(stim_orders):
             trigger.preFlip(None)
             my_win.flip()
             trigger.postFlip(None)
+
 
         bar.setAutoDraw(False)
         for _ in range(isi_frames):
