@@ -7,7 +7,7 @@ import time
 '''This is an interactive RF mapping program with drifting gratings'''
 
 
-mon = monitors.Monitor('Desktop')
+mon = monitors.Monitor('LGStim')
 mon.setDistance(25)
 
 my_win = visual.Window(size=mon.getSizePix(),
@@ -139,4 +139,5 @@ while True:
         ==============================""")
         log_pos = False
 
+    grating_stim.phase = (grating_stim.phase + tf/frame_rate) %1
     my_win.flip()

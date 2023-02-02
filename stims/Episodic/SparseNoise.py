@@ -36,7 +36,7 @@ if serial_port_name is None:
 
 adjust_stim_duration_to_match_2p = True
 
-mon = monitors.Monitor('Desktop')
+mon = monitors.Monitor('LGStim')
 mon.setDistance(25)
 
 

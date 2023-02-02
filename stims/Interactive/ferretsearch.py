@@ -48,7 +48,7 @@ stim_settings['foreground_color'] = -1      # 1: black on white, -1: white on bl
 
 
 # Monitor Set Up
-mon = monitors.Monitor('stim1')
+mon = monitors.Monitor('LGStim')
 mon.setDistance(25)
 
 my_win = visual.Window(size=mon.getSizePix(),

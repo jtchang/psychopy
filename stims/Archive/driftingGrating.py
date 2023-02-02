@@ -12,7 +12,7 @@ animalName = 'F2709_2022-08-01'  # F2350_2019-07-10'
 # ---------- Stimulus Description ---------- #
 '''A fullscreen drifting grating for 2pt orientation tuning'''
 #---------- Monitor Properties ----------#
-mon = monitors.Monitor('Desktop')  # gets the calibration for stimMonitor
+mon = monitors.Monitor('LGStim')  # gets the calibration for stimMonitor
 mon.setDistance(25)
 overwriteGammaCalibration = False
 newGamma = 0.479

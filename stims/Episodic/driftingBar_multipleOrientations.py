@@ -31,7 +31,7 @@ stim_settings = {
 }
 
 # #Monitor Set Up
-mon = monitors.Monitor('Stim1')
+mon = monitors.Monitor('LGStim')
 mon.setDistance(25)
 
 my_win = visual.Window(size=mon.getSizePix(),

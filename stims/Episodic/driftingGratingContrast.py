@@ -20,8 +20,8 @@ stim_settings = {
     'initial_delay': 10,
     'stim_duration': 4,
     'isi': 6,
-    'is_random': 1,
-    'random_phase': 1,
+    'is_random': 0,
+    'random_phase': 0,
     'temporal_freq': 1,
     'spatial_freq': 0.12,
     'contrasts': [0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1],
@@ -52,7 +52,7 @@ stim_settings['foreground_color'] = -1      # 1: black on white, -1: white on bl
 
 
 # Monitor Set Up
-mon = monitors.Monitor('Stim1')
+mon = monitors.Monitor('LGStim')
 mon.setDistance(25)
 
 my_win = visual.Window(size=mon.getSizePix(),

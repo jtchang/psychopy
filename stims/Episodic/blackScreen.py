@@ -21,7 +21,7 @@ adjustDurationToMatch2P = True
 
 orientations = ''
 # make stim
-mon = monitors.Monitor('Stim1')
+mon = monitors.Monitor('LGStim')
 myWin = visual.Window(size=mon.getSizePix(), monitor=mon, fullscr=False, screen=1, allowGUI=False, waitBlanking=True)
 
 
