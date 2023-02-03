@@ -32,7 +32,7 @@ stim_settings = {
     'stim_size': [360, 360]
 }
 
-trigger_type = 'SerialDaqOut'
+trigger_type = 'OutOnly'
 
 
 data_path, animal_name = load_animal_info(expt_json)
@@ -57,10 +57,12 @@ mon.setDistance(25)
 
 my_win = visual.Window(size=mon.getSizePix(),
                        monitor=mon,
-                       fullscr=False,
+                       fullscr=True,
                        screen=1,
                        allowGUI=False,
                        waitBlanking=True,
+                       checkTiming=True,
+                       winType='pyglet',
                        allowStencil=True)
 
 
@@ -73,7 +75,7 @@ trigger = create_trigger(trigger_type,
 
 
 # Stim Setup
-stim_settings['frame_rate'] = my_win.getActualFrameRate(nWarmUpFrames=100)
+stim_settings['frame_rate'] = 1/my_win.monitorFramePeriod
 logging.info(f'Frame Rate: {stim_settings["frame_rate"]:0.2f}')
 
 if adjust_stim_duration_to_match_2p:
@@ -193,9 +195,9 @@ for trial_num, stim_order in enumerate(trial_ordering):
         grating_stim.setAutoDraw(False)
 
         for _ in range(isi_frames):
-            trigger.preFlip(None)
+            
             my_win.flip()
-            trigger.postFlip(None)
+            
         
         trigger.postStim(None)
         

@@ -40,10 +40,12 @@ mon.setDistance(25)
 
 my_win = visual.Window(size=mon.getSizePix(),
                        monitor=mon,
-                       fullscr=False,
+                       fullscr=True,
                        screen=1,
                        allowGUI=False,
-                       waitBlanking=True)
+                       waitBlanking=True,
+                       checkTiming=True,
+                       winType='pyglet',)
 
 # Create Trigger:
 trigger = create_trigger(trigger_type,
@@ -62,7 +64,7 @@ stim = visual.Rect(win=my_win,
                    )
 
 # Stim Setup
-stim_settings['frame_rate'] = my_win.getActualFrameRate(nWarmUpFrames=100)
+stim_settings['frame_rate'] = 1/my_win.monitorFramePeriod
 logging.info(f'Frame Rate: {stim_settings["frame_rate"]:0.2f}')
 
 # PreTrial Logging

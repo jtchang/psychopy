@@ -64,8 +64,15 @@ moviepath='%sv2' % gliderType
 
 
 # Make Window, aperture if necessary, and setup triggers
-win = visual.Window([1920,1080], units='pix', monitor= mon, fullscr=False, screen=1, allowGUI=False, waitBlanking=False, allowStencil=True)
-
+win = my_win = visual.Window(size=mon.getSizePix(),
+                       monitor=mon,
+                       fullscr=True,
+                       screen=1,
+                       allowGUI=False,
+                       waitBlanking=True,
+                       checkTiming=True,
+                       winType='pyglet',
+                       allowStencil=True)
 if inAperture:
     aperture= visual.Aperture(win, size = apertureSize, pos=aperturePosition, shape = apertureShape)
 

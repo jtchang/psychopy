@@ -4,19 +4,32 @@ from psychopy.tools import monitorunittools
 import time
 
 #---------- Stimulus Description -----------#
-'''This is an interactive RF mapping program with drifting gratings'''
+'''This is an interactive RF mapping program with drifting gratings
+Controls:
+    Movement: Numpad: 8,4,6,2
+    Rotation: Numpad 7,9
+    SF: Numpad 1,3
+    Contrast: Arrow UP/DOWN
+    Patch Size: Numpad +,-
+
+
+
+
+'''
 
 
 mon = monitors.Monitor('LGStim')
 mon.setDistance(25)
 
 my_win = visual.Window(size=mon.getSizePix(),
-                       units='deg',
                        monitor=mon,
-                       fullscr=False,
+                       fullscr=True,
                        screen=1,
                        allowGUI=False,
-                       waitBlanking=True)
+                       waitBlanking=True,
+                       checkTiming=True,
+                       winType='pyglet',
+                       units='deg')
 
 
 grating_stim = visual.GratingStim(win=my_win,
@@ -31,7 +44,7 @@ grating_stim = visual.GratingStim(win=my_win,
 kb = keyboard.Keyboard()
 mouse = event.Mouse(win=my_win)
 
-frame_rate = my_win.getActualFrameRate(nWarmUpFrames=90)
+frame_rate = 1/my_win.monitorFramePeriod
 print(frame_rate)
 
 
@@ -55,15 +68,7 @@ while True:
             log_pos = True
         elif key.name is 'num_4':
             grating_stim.setPos((grating_stim.pos[0]-movement_increment, grating_stim.pos[1]))
-            log_pos = True
-        elif key.name is 'num_divide':
-            movement_increment = movement_increment / 2
-            print('decreasing movment speed')
-            log_pos = True
-        elif key.name is 'num_multiply':
-            print("Increasing movement speed")
-            movement_increment = movement_increment * 2
-            log_pos = True
+            log_pos = True0000......00000.....00000
         # Size
         elif key.name is 'num_subtract':
             grating_stim.setSize((grating_stim.size[0]-5, grating_stim.size[1]-5))
@@ -80,11 +85,12 @@ while True:
             log_pos = True
         # Temporal Frequency
         elif key.name is 'num_0':
-            tf = tf - 0.5 if tf >= 0.5 else tf
+            tf = tf - 0.1 if tf >= 0.1 else tf
             log_pos = True
         elif key.code is 110:  # numpad period
-            tf = tf + 0.5
+            tf = tf + 0.1
             log_pos = True
+        # Rotate
         elif key.name is 'num_7':
             grating_stim.setOri(grating_stim.ori-10)
             log_pos = True

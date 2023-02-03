@@ -32,7 +32,7 @@ stim_settings = {
     'stim_size': [360, 360]
 }
 
-trigger_type = 'SerialDaqOut'
+trigger_type = 'OutOnly'
 
 data_path, animal_name = load_animal_info(expt_json)
 if data_path is None or animal_name is None:
@@ -57,10 +57,12 @@ mon.setDistance(25)
 
 my_win = visual.Window(size=mon.getSizePix(),
                        monitor=mon,
-                       fullscr=False,
+                       fullscr=True,
                        screen=1,
                        allowGUI=False,
-                       waitBlanking=True)
+                       waitBlanking=True,
+                       checkTiming=True,
+                       winType='pyglet',)
 
 # Create Trigger:
 trigger = create_trigger(trigger_type,
@@ -71,7 +73,7 @@ trigger = create_trigger(trigger_type,
 
 
 # Stim Setup
-stim_settings['frame_rate'] = my_win.getActualFrameRate(nWarmUpFrames=250)
+stim_settings['frame_rate'] = 1/my_win.monitorFramePeriod
 logging.info(f'Frame Rate: {stim_settings["frame_rate"]:0.2f}')
 
 if adjust_stim_duration_to_match_2p:

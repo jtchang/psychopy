@@ -11,13 +11,15 @@ isUserControlled = 1 # If 1, the user can use "z" to flash the scrzzeen, 'c' to 
 mon = monitors.Monitor('LGStim')
 mon.setDistance(25)
 
-my_win = visual.Window(size=mon.getSizePix(),
+my_win = my_win = visual.Window(size=mon.getSizePix(),
                        monitor=mon,
-                       fullscr=False,
+                       fullscr=True,
                        screen=1,
                        allowGUI=False,
                        waitBlanking=True,
-                       color=[-1, -1, -1])
+                       checkTiming=True,
+                       winType='pyglet',
+                       color=[-1,-1,-1])
 
 
 # create visual stim:

@@ -4,19 +4,29 @@ from psychopy.tools import monitorunittools
 import time
 
 #---------- Stimulus Description -----------#
-'''This is an interactive RF mapping program with drifting gratings'''
+'''This is an interactive RF mapping program with drifting gratings
+Controls:
+    Spatial Frequency: Numpad /,*
+    Speed: Numpad +,-
+    Reverse: R
+    ON/OFF: Z
+    Quit: Esc
+    Reset: C
+'''
 
 
 mon = monitors.Monitor('LGStim')
 mon.setDistance(25)
 
 my_win = visual.Window(size=mon.getSizePix(),
-                       units='deg',
                        monitor=mon,
-                       fullscr=False,
+                       fullscr=True,
                        screen=1,
                        allowGUI=False,
-                       waitBlanking=True)
+                       waitBlanking=True,
+                       checkTiming=True,
+                       winType='pyglet',
+                       units='deg')
 
 
 grating_stim = visual.GratingStim(win=my_win,
@@ -35,7 +45,7 @@ kb = keyboard.Keyboard()
 mouse = event.Mouse(win=my_win)
 
 
-frame_rate = my_win.getActualFrameRate(nWarmUpFrames=90)
+frame_rate = 1/my_win.monitorFramePeriod
 print(frame_rate)
 
 ang_vel = 0.1  # Hz

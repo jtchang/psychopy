@@ -24,7 +24,7 @@ stim_settings = {
     'initial_delay': 10
 }
 
-trigger_type = 'NoTrigger'
+trigger_type = 'OutOnly'
 
 data_path, animal_name = load_animal_info(expt_json)
 if data_path is None or animal_name is None:
@@ -42,14 +42,16 @@ mon.setDistance(25)
 
 my_win = visual.Window(size=mon.getSizePix(),
                        monitor=mon,
-                       fullscr=False,
+                       fullscr=True,
                        screen=1,
                        allowGUI=False,
                        waitBlanking=True,
+                       checkTiming=True,
+                       winType='pyglet',
                        color=[0, 0, 0], colorSpace=u'rgb')
 
 
-sparse_noise = zarr.open(r'Stims/Images/SparseNoise.zarr', 'r')[:stim_settings['total_frames'],:,:] 
+sparse_noise = zarr.open(r'../Images/SparseNoise.zarr', 'r')[:stim_settings['total_frames'],:,:] 
 
 # Create Trigger:
 trigger = create_trigger(trigger_type,
@@ -60,7 +62,7 @@ trigger = create_trigger(trigger_type,
 
 
 # Stim Setup
-stim_settings['frame_rate'] = my_win.getActualFrameRate(nWarmUpFrames=100)
+stim_settings['frame_rate'] = 1/my_win.monitorFramePeriod
 logging.info(f'Frame Rate: {stim_settings["frame_rate"]:0.2f}')
 
 if adjust_stim_duration_to_match_2p:
@@ -84,7 +86,7 @@ img.setAutoDraw(False)
 
 #PreTrial Logging
 
-expt_name = trigger.getNextExpName()
+expt_name = trigger.getNextExpName(data_path, animal_name)
 stim_code_name = str(Path(__file__))
 log_file = Path(data_path).joinpath(animal_name, f'{animal_name}.txt')
 trigger.preTrialLogging(data_path,

@@ -4,7 +4,14 @@ import random, sys,  itertools, math
 import os
 mon = monitors.Monitor('testMonitor')
 mon.setDistance(25)
-win = visual.Window([1920*4,1080*4], units='pix', monitor= mon, fullscr=False, screen=1, allowGUI=False, waitBlanking=False)
+win = my_win = visual.Window(size=mon.getSizePix(),
+                       monitor=mon,
+                       fullscr=True,
+                       screen=1,
+                       allowGUI=False,
+                       waitBlanking=True,
+                       checkTiming=True,
+                       winType='pyglet',)
 
 
 #--------------------------

@@ -22,7 +22,14 @@ adjustDurationToMatch2P = True
 orientations = ''
 # make stim
 mon = monitors.Monitor('LGStim')
-myWin = visual.Window(size=mon.getSizePix(), monitor=mon, fullscr=False, screen=1, allowGUI=False, waitBlanking=True)
+my_win = visual.Window(size=mon.getSizePix(),
+                       monitor=mon,
+                       fullscr=True,
+                       screen=1,
+                       allowGUI=False,
+                       waitBlanking=True,
+                       checkTiming=True,
+                       winType='pyglet',)
 
 
 stim = visual.PatchStim(myWin, tex="sqrXsqr", texRes=64,

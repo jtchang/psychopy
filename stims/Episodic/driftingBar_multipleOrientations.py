@@ -38,12 +38,12 @@ stim_settings['deg_range'] = tools.monitorunittools.pix2deg(np.ceil(np.linalg.no
 
 my_win = visual.Window(size=mon.getSizePix(),
                        monitor=mon,
-                       fullscr=False,
+                       fullscr=True,
                        screen=1,
                        allowGUI=False,
-                       waitBlanking=False,
-                       color=[0, 0, 0],
-                       pos=(0,0))
+                       waitBlanking=True,
+                       checkTiming=True,
+                       winType='pyglet',)
 
 trigger_type = 'SerialDaqOut'
 
@@ -66,7 +66,7 @@ trigger = create_trigger(trigger_type,
                          )
 
 
-stim_settings['frame_rate'] = my_win.getActualFrameRate(nWarmUpFrames=100)
+stim_settings['frame_rate'] = 1/my_win.monitorFramePeriod
 logging.info(f'Frame Rate: {stim_settings["frame_rate"]:0.2f}')
 
 if adjust_stim_duration_to_match_2p:
