@@ -32,7 +32,7 @@ stim_settings = {
     'stim_size': [360, 360]
 }
 
-trigger_type = 'OutOnly'
+trigger_type = 'SerialDaqOut'
 
 
 data_path, animal_name = load_animal_info(expt_json)

@@ -41,7 +41,7 @@ my_win = my_win = visual.Window(size=mon.getSizePix(),
                        color=[0, 0, 0], colorSpace=u'rgb')
 
 
-wavelet = zarr.open(r'Stims/Images/SparseNoise.zarr', 'r')[:stim_settings['total_frames'],:,:] 
+wavelet = zarr.open(r'Stims/Images/Wavelet.zarr', 'r')[:stim_settings['total_frames'],:,:] 
 
 # Create Trigger:
 trigger = create_trigger(trigger_type,
