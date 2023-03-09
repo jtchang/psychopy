@@ -32,12 +32,12 @@ my_win = visual.Window(size=mon.getSizePix(),
                        winType='pyglet',)
 
 
-stim = visual.PatchStim(myWin, tex="sqrXsqr", texRes=64,
+stim = visual.PatchStim(my_win, tex="sqrXsqr", texRes=64,
                         size=[500, 500], sf=.0008, mask='none', pos=(1, 1))
 stim.setAutoDraw(True)
 
 stim.setColor(0, 'rgb255')
-myWin.flip()
+my_win.flip()
 
 # load triggers
 
@@ -63,4 +63,4 @@ trigger.readSer = False
 
 # just keep flipping forever
 while True:
-    myWin.flip()
+    my_win.flip()

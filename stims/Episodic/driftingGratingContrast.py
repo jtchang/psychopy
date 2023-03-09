@@ -24,7 +24,7 @@ stim_settings = {
     'random_phase': 0,
     'temporal_freq': 1,
     'spatial_freq': 0.12,
-    'contrasts': [0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1],
+    'contrasts': [0.1, 0.2, 0.3, 0.4, 0.5, 0.6,0.7,0.8,0.9, 1],
     'texture_type': 'sqr',
     'change_direction_at': 1,
     'animal_orientation': 0,

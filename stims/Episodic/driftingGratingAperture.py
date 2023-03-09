@@ -13,8 +13,8 @@ logging.basicConfig(level=logging.INFO)
 expt_json = r'C:\Users\fitzlab1\Documents\psychopy\animal_info.json'
 
 stim_settings = {
-    'num_trials': 2,
-    'num_orientations': 16,
+    'num_trials': 5,
+    'num_orientations': 8,
     'do_blank': 1,
     'num_blanks': 1,
     'initial_delay': 2,
@@ -22,19 +22,19 @@ stim_settings = {
     'isi': 6,
     'is_random': 1,
     'random_phase': 1,
-    'temporal_freq': .25,
+    'temporal_freq': 1,
     'spatial_freq': 0.06,
     'contrast': 1,
     'texture_type': 'sqr',
     'change_direction_at': 1,
     'animal_orientation': 0,
-    'center_pos': [0, 0],
+    'center_pos': (-25.82, -15.19),
     'stim_size': [360, 360],
     'aperture_center': [0,0],
-    'aperture_sizes': [10, 20, 30]
+    'aperture_sizes': [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 }
 
-trigger_type = 'NoTrigger'
+trigger_type = 'SerialDaqOut'
 
 data_path, animal_name = load_animal_info(expt_json)
 if data_path is None or animal_name is None:
@@ -62,6 +62,7 @@ my_win = visual.Window(size=mon.getSizePix(),
                        fullscr=True,
                        screen=1,
                        allowGUI=False,
+                       allowStencil=True,
                        waitBlanking=True,
                        checkTiming=True,
                        winType='pyglet',)
@@ -145,7 +146,7 @@ aperture = visual.Aperture(win=my_win,
 aperture.disable()
 #PreTrial Logging
 
-expt_name = trigger.getNextExpName()
+expt_name = trigger.getNextExpName(data_path, animal_name)
 stim_code_name = str(Path(__file__))
 log_file = Path(data_path).joinpath(animal_name, f'{animal_name}.txt')
 trigger.preTrialLogging(data_path,
@@ -176,8 +177,8 @@ for trial_num, stim_order in enumerate(trial_ordering):
         if stim_num < len(stim_codes):  # grating stims
             grating_stim.setContrast(stim_settings['contrast'])
             grating_stim.ori = stim_codes[stim_num][0] + ori_shift_val + stim_settings['animal_orientation']
-            logging.info('Stim %i: %0.5f deg (phase = %0.2f)',
-                         stim_num+1, stim_codes[stim_num][0], phase)
+            logging.info('Stim %i: %0.5f deg (phase = %0.2f) (size: %i)',
+                         stim_num+1, stim_codes[stim_num][0], phase, stim_codes[stim_num][1])
             
             aperture.setSize(stim_codes[stim_num][1])
             

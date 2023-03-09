@@ -21,7 +21,7 @@ stim_settings = {
     'is_random': 1,
     'random_phase': 1,
     'temporal_freq': 1,
-    'spatial_freq': 0.1,
+    'spatial_freq': 0.06,
     'contrast': 1,
     'texture_type': 'sqr',
     'change_direction_at': 1,
@@ -30,7 +30,7 @@ stim_settings = {
     'stim_size': [360, 360]
 }
 
-trigger_type = 'SerialDaqOut'
+trigger_type = 'OutOnly'
 
 data_path, animal_name = None, None
 

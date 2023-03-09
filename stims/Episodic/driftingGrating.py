@@ -18,12 +18,12 @@ stim_settings = {
     'do_blank': 1,
     'num_blanks': 1,
     'initial_delay': 10,
-    'stim_duration': 4,
+    'stim_duration': 10,
     'isi': 6,
     'is_random': 1,
     'random_phase': 0,
     'temporal_freq': 1,
-    'spatial_freq': 0.12,
+    'spatial_freq': 0.06,
     'contrast': 1,
     'texture_type': 'sqr',
     'change_direction_at': 1,
@@ -32,7 +32,7 @@ stim_settings = {
     'stim_size': [360, 360]
 }
 
-trigger_type = 'OutOnly'
+trigger_type = 'SerialDaqOut'
 
 data_path, animal_name = load_animal_info(expt_json)
 if data_path is None or animal_name is None:

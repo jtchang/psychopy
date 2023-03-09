@@ -68,7 +68,7 @@ while True:
             log_pos = True
         elif key.name is 'num_4':
             grating_stim.setPos((grating_stim.pos[0]-movement_increment, grating_stim.pos[1]))
-            log_pos = True0000......00000.....00000
+            log_pos = True
         # Size
         elif key.name is 'num_subtract':
             grating_stim.setSize((grating_stim.size[0]-5, grating_stim.size[1]-5))

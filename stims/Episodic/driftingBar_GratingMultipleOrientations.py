@@ -8,6 +8,7 @@ from psychopy import visual, monitors, tools
 from fitzhelpers.files import load_animal_info, load_port_num
 from triggers import create_trigger
 
+
 logging.basicConfig(level=logging.INFO)
 
 
@@ -16,19 +17,20 @@ expt_json = r'C:\Users\fitzlab1\Documents\psychopy\animal_info.json'
 
 stim_settings = {
     'num_trials': 20,
-    'num_orientations': 8,
+    'num_orientations': 16,
     'do_blank': 0,
     'num_blanks': 0,
-    'initial_delay': 10,
+    'initial_delay': 1,
     'stim_duration': 8,
     'isi': 0,
     'bar_color': [1, 1, 1],
-    'flash_interval': .5,
     'invert': 1,
     'bar_width': 5,  # degrees
+    'spatial_freq': 0.09,
+    'temporal_freq': 3,
     'center_pos': [0, 0],  # pixels
-    'shuffle': 0,
-    'head_angle': 26 #negative means rolled clockwise
+    'shuffle': 1,
+    'head_angle': 0 #negative means rolled clockwise
 }
 
 # #Monitor Set Up
@@ -44,9 +46,10 @@ my_win = visual.Window(size=mon.getSizePix(),
                        allowGUI=False,
                        waitBlanking=True,
                        checkTiming=True,
+                       allowStencil=True,
                        winType='pyglet',)
 
-trigger_type = 'SerialDaqOut'
+trigger_type = 'OutOnly'
 
 data_path, animal_name = load_animal_info(expt_json)
 if data_path is None or animal_name is None:
@@ -78,14 +81,29 @@ stim_settings['stim_frames'] = int(np.round(stim_settings['stim_duration'] * sti
 isi_frames = int(np.round(stim_settings['isi'] * stim_settings['frame_rate']))
 
 # Setup Stim
+phase_per_frame = stim_settings['temporal_freq'] / stim_settings['frame_rate'] # modulus 1 per psychopy
+
 bar_center = [tools.monitorunittools.pix2deg(stim_settings['center_pos'][0], mon),
                 tools.monitorunittools.pix2deg(stim_settings['center_pos'][1], mon)]
-bar = visual.Rect(win=my_win,
-                  width=stim_settings['bar_width'],
-                  height=360,
-                  units='deg',
-                  fillColor=stim_settings['bar_color'],
-                  pos=bar_center)
+bar_width =stim_settings['bar_width']
+grating = visual.GratingStim(win=my_win,
+                                  tex='sqr',
+                                  units='deg',
+                                  pos=bar_center,
+                                  size = [360,360],
+                                  sf=stim_settings['spatial_freq'],
+                                  autoLog=False)
+
+bar = visual.Aperture(win=my_win,
+                           units='deg',
+                           pos=bar_center,
+                           size=1,
+                           shape=[(-bar_width, 360),
+                                           (-bar_width, -360),
+                                           (bar_width, -360),
+                                           (bar_width, 360)],
+                           autoLog=False)
+
 
 
 
@@ -107,7 +125,7 @@ for i in range(stim_orders.shape[0]):
 
 ori_correction = -90
 
-
+print(stim_orders)
 # PreTrial Logging
 
 expt_name = trigger.getNextExpName(data_path, animal_name)
@@ -131,33 +149,42 @@ if stim_settings['initial_delay'] > 0:
         my_win.flip()
 
 for trial_num, trial_order in enumerate(stim_orders):
-    fill_color = np.array(stim_settings['bar_color']) * (-1 * stim_settings['invert'])**trial_num
-    bar.setFillColor(fill_color)
     logging.info('Starting Trial %s', trial_num+1)
+    
     for stim_num in trial_order:
-        bar.setAutoDraw(True)
+        
+        grating.setAutoDraw(True)
+        bar.enable()
         theta = np.deg2rad(orientations[stim_num] + ori_correction - stim_settings['head_angle'])
 
+        grating.ori = np.rad2deg(theta) + 90
+        bar.ori = np.rad2deg(theta)
         rot = np.array([[np.cos(theta), np.sin(theta)], [-np.sin(theta), np.cos(theta)]])
-        bar.setOri(np.rad2deg(theta))
+        
 
-        logging.info('Stim # %s : %0.2f', stim_num+1, orientations[stim_num])
-        trigger.preStim(stim_num+1)
-       
+        logging.info('Stim: %i: %f', stim_num, np.rad2deg(theta))
+        trigger.preStim(stim_num)
         for frame_num in range(stim_settings['stim_frames']):
             new_pos = np.array([-max_dim/2 + frame_num * deg_per_frame +bar_center[0], 0])
             rot_pos = np.dot(rot, new_pos)
             bar.setPos(rot_pos)
+
+            if trial_num % 2 == 0 :
+                phase_offset = frame_num * phase_per_frame 
+            else:
+                phase_offset = frame_num * -phase_per_frame
+            grating.setPhase(phase_offset)
             trigger.preFlip(None)
             my_win.flip()
             trigger.postFlip(None)
 
 
-        bar.setAutoDraw(False)
+        grating.setAutoDraw(False)
+        bar.disable()
         for _ in range(isi_frames):
-            trigger.preFlip(None)
+
             my_win.flip()
-            trigger.postFlip(None)
+
 
         trigger.postStim(None)
 
