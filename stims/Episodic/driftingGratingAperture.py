@@ -17,18 +17,18 @@ stim_settings = {
     'num_orientations': 8,
     'do_blank': 1,
     'num_blanks': 1,
-    'initial_delay': 2,
+    'initial_delay': 10,
     'stim_duration': 4,
     'isi': 6,
     'is_random': 1,
-    'random_phase': 1,
+    'random_phase': 0,
     'temporal_freq': 1,
-    'spatial_freq': 0.06,
+    'spatial_freq': 0.12,
     'contrast': 1,
     'texture_type': 'sqr',
     'change_direction_at': 1,
     'animal_orientation': 0,
-    'center_pos': (-25.82, -15.19),
+    'center_pos': [-13.1, 8],
     'stim_size': [360, 360],
     'aperture_center': [0,0],
     'aperture_sizes': [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
@@ -155,8 +155,8 @@ trigger.preTrialLogging(data_path,
                         stim_code_name,
                         orientations,
                         log_file)
-#stim_setting_path = str(Path(data_path).joinpath(animal_name, expt_name, 'stim_settings.json')
-trigger.logToFile('stim_settings.json',
+stim_setting_path = str(Path(data_path).joinpath(animal_name, expt_name, 'stim_settings.json'))
+trigger.logToFile(stim_setting_path,
                   json.dumps(stim_settings))
 
 # Start Stim Presentations

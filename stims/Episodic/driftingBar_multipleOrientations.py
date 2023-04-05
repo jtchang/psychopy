@@ -23,7 +23,7 @@ stim_settings = {
     'stim_duration': 8,
     'isi': 0,
     'bar_color': [1, 1, 1],
-    'flash_interval': .5,
+    'flash_interval': .5, 
     'invert': 1,
     'bar_width': 5,  # degrees
     'center_pos': [0, 0],  # pixels

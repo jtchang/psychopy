@@ -17,11 +17,12 @@ stim_settings = {
     'invert': 1,
     'stim_duration': 0.25,
     'inter_frame_interval': 0,# seconds
-    'center_pos': [0, 0],
+    'center_pos': [-13.1, 8],
     'image_size': [51, 51],
     'total_frames': 9000,
-    'isi': 10,
-    'initial_delay': 10
+    'isi': 0,
+    'initial_delay': 10,
+    'head_angle': -12.5
 }
 
 trigger_type = 'SerialDaqOut'
@@ -34,7 +35,7 @@ serial_port_name = load_port_num(expt_json)
 if serial_port_name is None:
     raise ValueError('Unknown COM port None')
 
-adjust_stim_duration_to_match_2p = True
+adjust_stim_duration_to_match_2p = False
 
 mon = monitors.Monitor('LGStim')
 mon.setDistance(25)
@@ -51,7 +52,7 @@ my_win = visual.Window(size=mon.getSizePix(),
                        color=[0, 0, 0], colorSpace=u'rgb')
 
 
-sparse_noise = zarr.open(r'../Images/SparseNoise.zarr', 'r')[:stim_settings['total_frames'],:,:] 
+sparse_noise = zarr.open(r'C:\Users\fitzlab1\Documents\psychopy\stims\Images/SparseNoise.zarr', 'r')[:stim_settings['total_frames'],:,:] 
 
 # Create Trigger:
 trigger = create_trigger(trigger_type,
@@ -72,14 +73,15 @@ logging.info(f'Stim Duration: {stim_settings["stim_duration"]}')
 
 frames_per_stim = np.round(stim_settings['stim_duration'] * stim_settings['frame_rate'])
 isi_frames = np.round(stim_settings['isi']*stim_settings['frame_rate'])
-
+stim_settings['frames_per_stim'] = 1 #frames_per_stim - changed trigger for only first frame
 img = visual.ImageStim(win=my_win,
                        image=None,
                        mask=None,
                        units='deg',
                        color=[1, 1, 1], colorSpace=u'rgb', opacity=1,
                        size=stim_settings['image_size'],
-                       pos = stim_settings['center_pos'])
+                       pos = stim_settings['center_pos'],
+                       ori = -stim_settings['head_angle'])
 img.setAutoDraw(False)
 
 
@@ -117,11 +119,10 @@ for trial_num in range(stim_settings['num_trials']):
     
         img.setAutoDraw(True)
         
-       
+        trigger.preFlip(None)
         for _ in np.arange(frames_per_stim):
-            trigger.preFlip(None)
             my_win.flip()
-            trigger.postFlip(None)
+        trigger.postFlip(None)
 
         img.setAutoDraw(False)
         for _ in np.arange(stim_settings['inter_frame_interval']*stim_settings['frame_rate']):

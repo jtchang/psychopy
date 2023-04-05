@@ -16,16 +16,16 @@ expt_json = r'C:\Users\fitzlab1\Documents\psychopy\animal_info.json'
 stim_settings = {
 
     'num_orientations': 16,
-    'stim_duration': 4,
-    'isi': 6,
+    'stim_duration': 2,
+    'isi': 2,
     'is_random': 1,
     'random_phase': 1,
     'temporal_freq': 1,
-    'spatial_freq': 0.06,
+    'spatial_freq': 0.03,
     'contrast': 1,
     'texture_type': 'sqr',
     'change_direction_at': 1,
-    'animal_orientation': 45,
+    'animal_orientation': 0,
     'center_pos': [0, 0],
     'stim_size': [360, 360]
 }

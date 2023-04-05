@@ -23,7 +23,7 @@ stim_settings = {
     'is_random': 0,
     'random_phase': 0,
     'temporal_freq': 1,
-    'spatial_freqs': [0.015, 0.03, 0.06, 0.09, 0.12, 0.15],
+    'spatial_freqs': [0.015, 0.03, 0.06, 0.09, 0.12, 0.18, 0.21, 0.24, 0.27, 0.32],
     'contrast': 1,
     'texture_type': 'sqr',
     'change_direction_at': 1,

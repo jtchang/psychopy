@@ -17,7 +17,7 @@ expt_json = r'C:\Users\fitzlab1\Documents\psychopy\animal_info.json'
 
 stim_settings = {
     'num_trials': 20,
-    'num_orientations': 16,
+    'num_orientations': 8,
     'do_blank': 0,
     'num_blanks': 0,
     'initial_delay': 1,
@@ -30,7 +30,7 @@ stim_settings = {
     'temporal_freq': 3,
     'center_pos': [0, 0],  # pixels
     'shuffle': 1,
-    'head_angle': 0 #negative means rolled clockwise
+    'head_angle': -12.5 #negative means rolled counterclockwise while facing animal
 }
 
 # #Monitor Set Up
@@ -49,7 +49,7 @@ my_win = visual.Window(size=mon.getSizePix(),
                        allowStencil=True,
                        winType='pyglet',)
 
-trigger_type = 'OutOnly'
+trigger_type = 'SerialDaqOut'
 
 data_path, animal_name = load_animal_info(expt_json)
 if data_path is None or animal_name is None:
@@ -125,7 +125,7 @@ for i in range(stim_orders.shape[0]):
 
 ori_correction = -90
 
-print(stim_orders)
+print(orientations)
 # PreTrial Logging
 
 expt_name = trigger.getNextExpName(data_path, animal_name)
@@ -162,7 +162,7 @@ for trial_num, trial_order in enumerate(stim_orders):
         rot = np.array([[np.cos(theta), np.sin(theta)], [-np.sin(theta), np.cos(theta)]])
         
 
-        logging.info('Stim: %i: %f', stim_num, np.rad2deg(theta))
+        logging.info('Stim: %i: %f', stim_num, orientations[stim_num] )
         trigger.preStim(stim_num)
         for frame_num in range(stim_settings['stim_frames']):
             new_pos = np.array([-max_dim/2 + frame_num * deg_per_frame +bar_center[0], 0])
