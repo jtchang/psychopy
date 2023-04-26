@@ -8,6 +8,10 @@ from tqdm import tqdm
 import random
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
+from io import BytesIO
+from urllib.request import urlopen
+from zipfile import ZipFile
+
 
 def rescale_img(idx_start, idx_stop, files):
     img_stack = np.empty((idx_stop-idx_start, 800, 800), dtype=np.uint8)
@@ -34,35 +38,39 @@ def rescale_img(idx_start, idx_stop, files):
 
 
 if __name__ == '__main__':
-    think_db = r'C:\Users\jeremyc\Pictures\ThinkConceptDatabase'
+    zipurl = "https://things-initiative.org/uploads/THINGS/images.zip"
 
-    # screen for all 800x800 images
+    with urlopen(zipurl) as zipresp:
+        with ZipFile(BytesIO(zipresp.read())) as zfile:
+            zfile.extractall('/tmp/ThingsDB')
 
-    files = list(Path(think_db).rglob(('*.jpg')))
+            things_db = '/tmp/ThingsDB'
+            chunk_size = 1000
+            # screen for all 800x800 images
 
-    # we'll skip some categories that don't have interesting images
+            files = list(Path(things_db).rglob(('*.jpg')))
 
-    image_zarr = zarr.open(r'G:/natural_scenes_THINK.zarr',
-                           mode='w',
-                           shape=(len(files), 800, 800),
-                           chunks=(500, 800, 800), dtype=np.uint8)
-    # shuffle with a seed to get repeatable results
-    random.Random(255).shuffle(files)
+            # we'll skip some categories that don't have interesting images
+            store = zarr.DirectoryStore('natural_scenes_THINK.zarr', normalize_keys=True)
+            image_zarr = zarr.zeros(shape=(len(files), 800, 800),
+                                    chunks=(chunk_size, 800, 800), dtype=np.uint8, store=store, overwrite=True)
+            # shuffle with a seed to get repeatable results
+            random.Random(255).shuffle(files)
 
-    with ProcessPoolExecutor(max_workers=6) as pool:
-        with tqdm(total=len(files)//500) as progress:
-            futures = []
-            for idx_start in np.arange(0, len(files), 500, dtype=np.uint8):
-                idx_stop = idx_start + 500
+            with ProcessPoolExecutor(max_workers=6) as pool:
+                with tqdm(total=len(files)//chunk_size) as progress:
+                    futures = []
+                    for idx_start in np.arange(0, len(files), chunk_size, dtype=np.uint8):
+                        idx_stop = idx_start + chunk_size
 
-                if idx_stop > len(files):
-                    idx_stop = len(files)
+                        if idx_stop > len(files):
+                            idx_stop = len(files)
 
-                future = pool.submit(rescale_img, idx_start, idx_stop, files[idx_start:idx_stop])
-                futures.append(future)
+                        future = pool.submit(rescale_img, idx_start, idx_stop, files[idx_start:idx_stop])
+                        futures.append(future)
 
-            for future in as_completed(futures):
-                idx_start, idx_stop, img = future.result()
-                image_zarr[idx_start:idx_stop, :, :] = img
-                del future
-                progress.update(1)
+                    for future in as_completed(futures):
+                        idx_start, idx_stop, img = future.result()
+                        image_zarr[idx_start:idx_stop, :, :] = img
+                        del future
+                        progress.update(1)
