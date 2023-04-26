@@ -1,6 +1,7 @@
 Gliders/ThreePointv2/ 
 Gliders/TwoPointv2/
-
+# Large Image Datasets
+stims/Images/natural_scenes_THINK.zarr/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
